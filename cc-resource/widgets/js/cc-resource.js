@@ -22,60 +22,46 @@
     };
 
     CCResource.prototype.init = function(data) {
-        this.data = {};
-        $.extend(this.data, this.DEFAULT_DATA, data);
-    };
-
-    CCResource.prototype.createElem = function(container) {
-        var data = this.data,
-            resourceElem = $('<div>').addClass('resource'),
-            figureElem = $('<figure>').appendTo(resourceElem),
-            creditsElem = $('<div>').addClass('credits').appendTo(resourceElem);
+        this.data = $.extend({}, this.DEFAULT_DATA, data);
+        this.resourceElem = $('<div>').addClass('resource loading');
+        this.figureElem = $('<figure>').appendTo(this.resourceElem);
+        this.overlayElem = $('<div>').addClass('overlay').appendTo(this.resourceElem);
 
         if (data.type) {
-            $(resourceElem).addClass('resource-type-'+data.type);
+            this.resourceElem.addClass('resource-type-'+data.type);
         }
 
         if (data.typeColor) {
-            $(resourceElem).css('background-color', '#'+data.typeColor);
+            this.resourceElem.css('background-color', '#'+data.typeColor);
         }
 
         if (data.typeIcon) {
-            var iconElem = $('<img>').attr({
+            $('<img>').attr({
                 'class': 'resource-icon',
                 'src': data.typeIcon,
                 'alt': data.typeName
-            });
-            iconElem.appendTo(resourceElem);
+            }).appendTo(this.resourceElem);
         }
+    };
 
-        if (data.imageURL) {
-            $(container).addClass('loading');
-            var preloadImage = $('<img>');
-            preloadImage.one('load error', function(e) {
-                $(container).removeClass('loading');
-                if (e.type == 'error') $(container).addClass('loading-error');
-                $(this).remove();
-            });
-            preloadImage.attr('src', data.imageURL);
-            figureElem.addClass('cc-resource-image').css({
-                'background-image': 'url(\'' + data.imageURL + '\')'
-            })
-        } else {
-            figureElem.addClass('cc-resource-text').append(
-                $('<p>').html(data.title)
-            );
-
-        }
+    CCResource.prototype.getDetailsElem = function() {
+        var data = this.data,
+            detailsElem = $('<div>').addClass('resource-details');
 
         if (data.typeName) {
-            var typeWrapper = $('<div>').addClass('resource-type').appendTo(creditsElem);
+            var typeWrapper = $('<div>').addClass('resource-type').appendTo(detailsElem);
             $('<span>').text(data.typeName).appendTo(typeWrapper);
         }
 
         if (data.imageCaptionHtml) {
-            var captionWrapper = $('<div>').addClass('resource-caption').appendTo(creditsElem);
-            $('<div>').html(data.imageCaptionHtml).appendTo(captionWrapper);
+            var captionWrapper = $('<div>').addClass('resource-caption').appendTo(detailsElem),
+                captionInner = $('<p>').html(data.imageCaptionHtml).appendTo(captionWrapper);
+            // Always open attribution links in a new window
+            $('a', captionInner).attr({
+                'target': '_blank',
+                'rel': 'noopener'
+            });
+            captionInner.appendTo(captionWrapper);
         }
 
         if (data.platformIcon) {
@@ -83,11 +69,43 @@
                 'class': 'resource-logo',
                 'src': data.platformIcon,
                 'alt': data.platformName
-            }).appendTo(creditsElem);
+            }).appendTo(detailsElem);
         }
 
-        $(container).empty().append(resourceElem);
-        $(container).removeClass('empty');
+        return detailsElem;
+    };
+
+    CCResource.prototype.createElem = function(container) {
+        var data = this.data;
+
+        // We populate the figureElem when the element is first added to the
+        // page. Otherwise we end up requesting way too many images at once.
+
+        if (data.imageURL) {
+            this._preloadImage(data.imageURL, this.resourceElem);
+            this.figureElem.addClass('cc-resource-image').css({
+                'background-image': 'url(\'' + data.imageURL + '\')'
+            });
+        } else {
+            this.figureElem.addClass('cc-resource-text').append(
+                $('<p>').html(data.title)
+            );
+            this.resourceElem.removeClass('loading');
+        }
+
+        this.getDetailsElem().appendTo(this.overlayElem);
+
+        $(container).empty().append(this.resourceElem);
+    };
+
+    CCResource.prototype._preloadImage = function(url, container) {
+        var imgElem = $('<img>');
+        imgElem.one('load error', function(e) {
+            container.removeClass('loading');
+            if (e.type == 'error') container.addClass('loading-error');
+            $(this).remove();
+        });
+        imgElem.attr('src', url);
     };
 
 
@@ -205,6 +223,25 @@
         // hammering the browser with DOM lookups
         this.emptyTiles = [];
         this.tilesCount = 0;
+
+        this.container.on('mouseenter click', '.resource', function(e) {
+            var isActive = $(this).hasClass('active');
+            if (!isActive) {
+                $('.resource.active', container).not(this).removeClass('active');
+                $(this).addClass('active');
+                e.preventDefault();
+            }
+        });
+
+        this.container.on('mouseleave', '.resource', function(e) {
+            $(this).removeClass('active');
+        });
+
+        // Disable mouse hover events for touch devices. This is an ugly hack
+        // to avoid the double tap problem.
+        this.container.one('touchstart', '.resource', function(e) {
+            $(container).off('mouseenter');
+        });
     };
 
     CCResourceGrid.prototype.updateDimensions = function() {
@@ -316,8 +353,8 @@
         while (this.hasNext() && resources.hasNext()) {
             var resourceTile = this.next(),
                 resource = resources.next();
-            resourceTile.data('resource', resource);
             resource.createElem(resourceTile);
+            resourceTile.removeClass('empty');
         }
 
         // Return true if all tiles were filled; false if we ran out of resources.

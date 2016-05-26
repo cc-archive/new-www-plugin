@@ -134,7 +134,7 @@
     };
 
     CCResourceFeed.prototype.next = function() {
-        /* TODO: Instead, we should check hasNext and call loadMore
+        /* TODO: Instead, we should check hasNext and call loadMoreFromServer
          *       automatically if we aren't at the end */
         var data = this.incomingData.shift(),
             resource = new CCResource(data);
@@ -145,24 +145,32 @@
         return this.incomingData.length > 0;
     };
 
-    CCResourceFeed.prototype.loadMore = function() {
+    CCResourceFeed.prototype.loadMoreFromServer = function() {
         var _this = this;
-        var isLoading = this.loading ? !this.loading.status : false;
-        if (!isLoading) {
-            var requestEnd = this.getMaximum() - this.nextRequestStart;
+
+        if (this.loading && this.loading.status === undefined) return;
+
+        var requestEnd = this.getMaximum() - this.nextRequestStart,
+            requestCount = (requestEnd > 0) ? Math.min(this.batchSize, requestEnd) : 0;
+
+        if (requestCount > 0) {
             this.loading = $.ajax({
                 'url': this.requestURL,
                 'type': 'post',
                 'dataType': 'json',
                 'data': {
-                    action: 'get_resources',
-                    start: this.nextRequestStart,
-                    count: Math.min(this.batchSize, requestEnd)
+                    'action': 'get_resources',
+                    'start': this.nextRequestStart,
+                    'count': requestCount
                 }
             }).done(function(data, textStatus, jqXHR) {
                 _this.addResourcesFromData(data);
             });
         }
+    };
+
+    CCResourceFeed.prototype.hasMoreFromServer = function() {
+        return this.resourcesRemaining === undefined || this.resourcesRemaining > 0;
     };
 
     CCResourceFeed.prototype.getMaximum = function() {
@@ -375,8 +383,8 @@
 
         var fillEmptyResourceTiles = function() {
             var needsMoreResources = !resourceGrid.fillTiles(resourceFeed);
-            if (needsMoreResources) {
-                resourceFeed.loadMore();
+            if (needsMoreResources && resourceFeed.hasMoreFromServer()) {
+                resourceFeed.loadMoreFromServer();
             }
         };
 
@@ -401,15 +409,18 @@
             }
         };
 
-        resourceGrid = new CCResourceGrid('.resource-list');
-        resourceGrid.addRows(2, {
-            'initial': true
-        });
-
         resourceFeed = new CCResourceFeed(CC_RESOURCE.ajaxurl, {
             'onResourcesLoaded': onResourcesLoaded
         });
+        resourceGrid = new CCResourceGrid('.resource-list');
+
         resourceFeed.addResourcesFromData(CC_RESOURCE.initial);
+        var initialTilesCount = resourceGrid.addRows(2, {
+            'initial': true
+        });
+        if (initialTilesCount > 0) {
+            fillEmptyResourceTiles(initialTilesCount);
+        }
 
         $(window).on('resize', onResizeCb);
         $(document).on('cc-scroll', onScrollCb);

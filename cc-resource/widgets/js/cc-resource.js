@@ -207,7 +207,8 @@
     };
 
     CCResourceGrid.prototype.DEFAULT_OPTIONS = {
-        'maximum': undefined
+        'maximum': undefined,
+        'maxExtraRows': 3
     };
 
     CCResourceGrid.prototype.DEFAULT_ADD_TILES_OPTIONS = {
@@ -327,17 +328,19 @@
         return this.addTiles(tilesNeeded + remainder, addTilesOptions);
     };
 
-    CCResourceGrid.prototype.addRowsForSpace = function(scrollBottom, addTilesOptions) {
+    CCResourceGrid.prototype.addRowsForSpace = function(scrollBottom, extraHeight, addTilesOptions) {
         if (this.tileHeight === undefined) this.setInitialDimensions(addTilesOptions);
 
         var listBottom = this.container.offset().top + this.container.outerHeight(),
             triggerEdge = listBottom - this.tileHeight,
             distanceFromEdge = scrollBottom - triggerEdge,
-            rowsNeeded = this.tileHeight > 0 ? Math.ceil(distanceFromEdge / this.tileHeight) : 0;
+            rowsNeeded = (this.tileHeight > 0) ? Math.ceil(distanceFromEdge / this.tileHeight) : 0;
 
         if (rowsNeeded > 0) {
+            var extraRows = (extraHeight && this.tileHeight > 0) ? Math.ceil(extraHeight / this.tileHeight) : 1;
+            extraRows = Math.min(this.maxExtraRows, extraRows);
             // Load as many rows as we need, and a bit extra
-            return this.addRows(rowsNeeded + 1, addTilesOptions);
+            return this.addRows(rowsNeeded + extraRows, addTilesOptions);
         } else {
             return 0;
         }
@@ -389,12 +392,12 @@
 
         var onScrollCb = function(e, params) {
             resourceGrid.updateOnScreen();
-        };
 
-        var onScrollDownCb = function(e, params) {
-            var newTilesCount = resourceGrid.addRowsForSpace(params['bottom']);
-            if (newTilesCount > 0) {
-                fillEmptyResourceTiles();
+            if (params['delta'] == undefined || params['delta'] > 0) {
+                var newTilesCount = resourceGrid.addRowsForSpace(params['bottom'], params['delta']);
+                if (newTilesCount > 0) {
+                    fillEmptyResourceTiles();
+                }
             }
         };
 
@@ -410,6 +413,5 @@
 
         $(window).on('resize', onResizeCb);
         $(document).on('cc-scroll', onScrollCb);
-        $(document).on('cc-scroll-down', onScrollDownCb);
     });
 })(jQuery);

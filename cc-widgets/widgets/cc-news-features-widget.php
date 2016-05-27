@@ -57,7 +57,7 @@ class CreativeCommons_News_Features_Widget extends WP_Widget {
                       </div>
                       <div class="author-info-group">
                         <div class="author-date"><?php the_date(); ?></div>
-                        <div class="author-name"><h4><?php echo get_the_author(); ?></h4></div>
+                        <div class="author-name"><h4><?php the_author_posts_link(); ?></h4></div>
                       </div>
                     </div>
                     <div class="excerpt"><?php print the_excerpt(); ?></div>
@@ -96,7 +96,7 @@ class CreativeCommons_News_Features_Widget extends WP_Widget {
 	                      </div>
 	                      <div class="author-info-group">
 	                        <div class="author-date"><?php the_date(); ?></div>
-	                        <div class="author-name"><h4><?php echo get_the_author(); ?></h4></div>
+                          <div class="author-name"><h4><?php the_author_posts_link(); ?></h4></div>
 	                      </div>
 	                    </div>
 	                    <div class="excerpt"><?php print the_excerpt(); ?></div>

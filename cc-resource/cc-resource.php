@@ -339,6 +339,7 @@ function cc_get_resources($request_start, $request_count) {
     $resource['url'] = get_post_meta($post->ID ,'cc_resource_meta_url', true);
 
     $resource['title'] = get_the_title($post);
+    $resource['descriptionHtml'] = get_the_content();
 
     if (has_post_thumbnail()) {
       $attachment_id = get_post_thumbnail_id($post->ID);

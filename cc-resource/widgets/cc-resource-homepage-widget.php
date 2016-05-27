@@ -77,7 +77,7 @@ class CreativeCommons_Resource_Homepage_Widget extends WP_Widget {
     wp_enqueue_script(
       'cc-resource',
       plugin_dir_url( __FILE__ ) . 'js/cc-resource.js', array('cc-common'),
-      '20160525',
+      '20160527',
       true
     );
 

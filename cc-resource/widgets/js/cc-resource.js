@@ -12,11 +12,12 @@
     CCResource.prototype.DEFAULT_DATA = {
         'url': undefined,
         'title': undefined,
+        'contentHtml': undefined,
+        'imageURL': undefined,
+        'descriptionHtml': undefined,
         'type': undefined,
         'typeName': undefined,
         'typeIcon': undefined,
-        'imageURL': undefined,
-        'imageCaptionHtml': undefined,
         'platformIcon': undefined,
         'platformName': undefined
     };
@@ -53,9 +54,11 @@
             $('<span>').text(data.typeName).appendTo(typeWrapper);
         }
 
-        if (data.imageCaptionHtml) {
+        var captionHtml = data.descriptionHtml || data.imageCaptionHtml || data.imageDescriptionHtml;
+
+        if (captionHtml) {
             var captionWrapper = $('<div>').addClass('resource-caption').appendTo(detailsElem),
-                captionInner = $('<p>').html(data.imageCaptionHtml).appendTo(captionWrapper);
+                captionInner = $('<p>').html(captionHtml).appendTo(captionWrapper);
             // Always open attribution links in a new window
             $('a', captionInner).attr({
                 'target': '_blank',

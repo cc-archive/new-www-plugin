@@ -71,11 +71,11 @@ function cc_team_listing_shortcode( $atts ) {
           $output .= '  <div class="position">' . $user->cc_position . '</div></a>';
           $output .= '  <div class="description">' . wp_trim_words($user->description, 10) . ' <a class="more" href="' . get_author_posts_url($user->ID) . '">More</a></div>';
           $output .= '  <div class="social-links">';
-          if ($user->cc_twitter){
-            $output .= '  <a href="https://twitter.com/' . $user->cc_twitter . '"><span class="genericon genericon-twitter"></span></a>';
+          if ($user->twitter){
+            $output .= '  <a href="https://twitter.com/' . $user->twitter . '"><span class="genericon genericon-twitter"></span></a>';
           }
-          if (filter_var($user->cc_facebook, FILTER_VALIDATE_URL)){
-            $output .= '  <a href="' . $user->cc_facebook . '"><span class="genericon genericon-facebook"></span></a>';
+          if (filter_var($user->facebook, FILTER_VALIDATE_URL)){
+            $output .= '  <a href="' . $user->facebook . '"><span class="genericon genericon-facebook"></span></a>';
           }
           if (filter_var($user->cc_linkedin, FILTER_VALIDATE_URL)){
             $output .= '  <a href="' . $user->cc_linkedin . '"><span class="genericon genericon-linkedin"></span></a>';

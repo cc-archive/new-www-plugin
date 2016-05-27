@@ -82,29 +82,11 @@ function cc_author_add_custom_user_profile_fields( $user ) {
     </tr>
     <tr>
       <th>
-        <label for="cc_twitter"><?php _e('Twitter Handle', 'creativecommons'); ?>
-      </label></th>
-      <td>
-        @<input type="text" name="cc_twitter" id="cc_twitter" value="<?php echo esc_attr( get_the_author_meta( 'cc_twitter', $user->ID ) ); ?>" class="regular-text" /><br />
-        <p class="description"><?php _e('Your twitter handle', 'cc_twitter'); ?></p>
-      </td>
-    </tr>
-    <tr>
-      <th>
         <label for="cc_linkedin"><?php _e('LinkedIn', 'creativecommons'); ?>
       </label></th>
       <td>
         <input type="text" name="cc_linkedin" id="cc_linkedin" value="<?php echo esc_attr( get_the_author_meta( 'cc_linkedin', $user->ID ) ); ?>" class="regular-text" /><br />
         <p class="description"><?php _e('A link to your LinkedIn public profile', 'cc_linkedin'); ?></p>
-      </td>
-    </tr>
-    <tr>
-      <th>
-        <label for="cc_facebook"><?php _e('Facebook Profile', 'creativecommons'); ?>
-      </label></th>
-      <td>
-        <input type="text" name="cc_facebook" id="cc_facebook" value="<?php echo esc_attr( get_the_author_meta( 'cc_facebook', $user->ID ) ); ?>" class="regular-text" /><br />
-        <p class="description"><?php _e('Your facebook profile URL', 'cc_facebook'); ?></p>
       </td>
     </tr>
     <tr>
@@ -125,9 +107,7 @@ function cc_author_save_custom_user_profile_fields( $user_id ) {
   }
   update_usermeta( $user_id, 'cc_position', $_POST['cc_position'] );
   update_usermeta( $user_id, 'cc_group', $_POST['cc_group'] );
-  update_usermeta( $user_id, 'cc_twitter', $_POST['cc_twitter'] );
   update_usermeta( $user_id, 'cc_linkedin', $_POST['cc_linkedin'] );
-  update_usermeta( $user_id, 'cc_facebook', $_POST['cc_facebook'] );
   update_usermeta( $user_id, 'cc_since', $_POST['cc_since'] );
   update_usermeta( $user_id, 'cc_location', $_POST['cc_location'] );
   update_usermeta( $user_id, 'cc_biography', htmlspecialchars($_POST['cc_biography']));

@@ -7,6 +7,22 @@
  * Author: Creative Commons
  * Author URI: http://creativecommons.org
  * License: GPL2
+ *
+ * --------------------------------------------------------------------
+ *
+ * Creative Commons Resources - The Resource post type for the Creative Commons site.
+ * Copyright (C) 2016 Creative Commons
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
  */
 
 include_once ('widgets/cc-resource-homepage-widget.php');

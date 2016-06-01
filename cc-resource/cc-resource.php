@@ -368,8 +368,13 @@ function cc_ajax_get_resources() {
 function cc_get_resources($request_start, $request_count) {
   $resources = array();
 
+  // Get all published resources. Note that this is different behaviour from
+  // the default, where post_status varies depending on the current user and
+  // whether this call is happening over AJAX.
+
   $the_query = new WP_Query(array(
     'post_type' => 'resource',
+    'post_status' => 'publish',
     'offset' => $request_start,
     'posts_per_page' => $request_count
   ));

@@ -297,18 +297,37 @@ function cc_resource_type_update_meta_fields( $term_id, $tt_id ){
 
 add_action( 'add_meta_boxes', 'cc_resource_meta' );
 function cc_resource_meta() {
-  add_meta_box('cc_resource_metabox_url', 'Resource URL', 'cc_resource_meta_url', 'resource', 'normal','high');
-  add_meta_box('description', 'Description', 'cc_resource_description', 'resource', 'normal','high');
+  add_meta_box('cc_resource_metabox_url', 'Resource URL', 'cc_resource_meta_url', 'resource', 'normal', 'high');
+  add_meta_box('description', 'Caption', 'cc_resource_description', 'resource', 'normal', 'high');
+  // Move the default postimagediv (Featured Image) to somewhere more central
+  add_meta_box('postimagediv', 'Image', 'post_thumbnail_meta_box', 'resource', 'normal', 'high');
+}
+
+add_action( 'do_meta_boxes', 'cc_resource_remove_meta' );
+function cc_resource_remove_meta() {
+  // Remove some unnecessary meta boxes for Resources
+  remove_meta_box('slugdiv', 'resource', 'normal');
+  remove_meta_box('sharing_meta', 'resource', 'advanced');
+  remove_meta_box('wpseo_meta', 'resource', 'normal');
 }
 
 function cc_resource_meta_url( $post ) {
   $cc_resource_meta_url = get_post_meta($post->ID, 'cc_resource_meta_url', true);
-  echo '<input type="url" name="cc_resource_meta_url" value="' . esc_attr($cc_resource_meta_url) . '" />' . "\n";
+  echo '<input type="url" name="cc_resource_meta_url" class="large-text" value="' . esc_attr($cc_resource_meta_url) . '" />' . "\n";
 }
 
 function cc_resource_description( $post ) {
   $cc_resource_description =  $post->post_content;
-  wp_editor(htmlspecialchars_decode($cc_resource_description), 'content', array('textarea_name'=>'content'));
+  wp_editor(
+    htmlspecialchars_decode($cc_resource_description),
+    'content',
+    array(
+      'media_buttons' => false,
+      'textarea_name' => 'content',
+      'textarea_rows' => 8,
+      'teeny' => true
+    )
+  );
 }
 
 add_action( 'save_post', 'cc_resource_meta_save' );

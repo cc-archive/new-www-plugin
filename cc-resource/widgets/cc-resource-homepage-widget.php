@@ -83,7 +83,7 @@ class CreativeCommons_Resource_Homepage_Widget extends WP_Widget {
 
     wp_localize_script('cc-resource', 'CC_RESOURCE', array(
       'ajaxurl' => admin_url('admin-ajax.php'),
-      'initial' => cc_get_resources(0, 12)
+      'initial' => cc_get_resources(0, 16)
     ));
 
     $title = isset( $instance['title' ] ) ? $instance['title'] : NULL;

@@ -135,6 +135,7 @@
 
     CCResourceFeed.prototype.init = function(requestURL) {
         this.requestURL = requestURL;
+        this.initialId = 0;
         this.resourcesTotal = undefined;
         this.resourcesRemaining = undefined;
         this.incomingData = [];
@@ -165,10 +166,11 @@
         if (requestCount > 0) {
             this.loading = $.ajax({
                 'url': this.requestURL,
-                'type': 'post',
+                'type': 'get',
                 'dataType': 'json',
                 'data': {
                     'action': 'get_resources',
+                    'first': this.initialId,
                     'start': this.nextRequestStart,
                     'count': requestCount
                 }
@@ -211,6 +213,10 @@
         var newResources = data['resources'] || [];
 
         if (newResources) {
+            if (this.initialId == 0) {
+                var firstResource = newResources[0] || {};
+                this.initialId = firstResource.id;
+            }
             Array.prototype.push.apply(this.incomingData, newResources);
             this.nextRequestStart += newResources.length;
             this.onResourcesLoaded();
@@ -274,6 +280,7 @@
             this.tileHeight = 0;
         }
         this.rowSize = this.tileWidth > 0 ? Math.ceil(listWidth / this.tileWidth) : undefined;
+        this.maxExtraRows = Math.ceil($(window).height() / this.tileHeight);
     };
 
     CCResourceGrid.prototype.setInitialDimensions = function(addTilesOptions) {
@@ -345,19 +352,20 @@
         return this.addTiles(tilesNeeded + remainder, addTilesOptions);
     };
 
-    CCResourceGrid.prototype.addRowsForSpace = function(scrollBottom, extraHeight, addTilesOptions) {
+    CCResourceGrid.prototype.addRowsForSpace = function(scrollBottom, velocity, addTilesOptions) {
         if (this.tileHeight === undefined) this.setInitialDimensions(addTilesOptions);
 
-        var listBottom = this.container.offset().top + this.container.outerHeight(),
-            triggerEdge = listBottom - this.tileHeight,
+        var padding = this.tileHeight || 0,
+            listBottom = this.container.offset().top + this.container.outerHeight(),
+            triggerEdge = listBottom - padding,
             distanceFromEdge = scrollBottom - triggerEdge,
-            rowsNeeded = (this.tileHeight > 0) ? Math.ceil(distanceFromEdge / this.tileHeight) : 0;
+            rowsNeeded = (padding > 0) ? Math.ceil(distanceFromEdge / padding) : 0;
 
         if (rowsNeeded > 0) {
-            var extraRows = (extraHeight && this.tileHeight > 0) ? Math.ceil(extraHeight / this.tileHeight) : 1;
-            extraRows = Math.min(this.maxExtraRows, extraRows);
+            var extraRows = (velocity && padding > 0) ? Math.ceil(velocity / padding) : 0;
             // Load as many rows as we need, and a bit extra
-            return this.addRows(rowsNeeded + extraRows, addTilesOptions);
+            var newRows = Math.min(this.maxExtraRows, rowsNeeded + extraRows);
+            return this.addRows(newRows, addTilesOptions);
         } else {
             return 0;
         }
@@ -410,11 +418,18 @@
         var onScrollCb = function(e, params) {
             resourceGrid.updateOnScreen();
 
-            if (params['delta'] == undefined || params['delta'] > 0) {
-                var newTilesCount = resourceGrid.addRowsForSpace(params['bottom'], params['delta']);
-                if (newTilesCount > 0) {
-                    fillEmptyResourceTiles();
-                }
+            var newTilesCount = 0,
+                velocity = params['velocity'],
+                bottom = params['bottom'];
+
+            if (velocity === undefined) {
+                newTilesCount = resourceGrid.addRowsForSpace(bottom, undefined);
+            } else if (velocity > 0) {
+                newTilesCount = resourceGrid.addRowsForSpace(bottom + velocity, velocity);
+            }
+
+            if (newTilesCount > 0) {
+                fillEmptyResourceTiles();
             }
         };
 

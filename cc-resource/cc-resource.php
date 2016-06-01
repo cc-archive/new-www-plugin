@@ -349,8 +349,17 @@ function cc_resource_image_sizes() {
 add_action( 'wp_ajax_get_resources', 'cc_ajax_get_resources' );
 add_action( 'wp_ajax_nopriv_get_resources', 'cc_ajax_get_resources' );
 function cc_ajax_get_resources() {
-  $request_start = (int)$_POST['start'];
-  $request_count = (int)$_POST['count'];
+  $request_start = (int)$_GET['start'];
+  $request_count = (int)$_GET['count'];
+
+  if ( !is_user_logged_in() ) {
+    // Tell anonymous users to cache these for one hour
+    $expires = 60 * 60;
+    $expires_date = gmdate('D, d M Y H:i:s', time() + $expires);
+    header("Pragma: public");
+    header("Cache-Control: maxage=$expires");
+    header("Expires: $expires_date GMT");
+  }
 
   $resources_obj = cc_get_resources($request_start, $request_count);
   wp_send_json($resources_obj);
@@ -371,8 +380,8 @@ function cc_get_resources($request_start, $request_count) {
     $resource = array();
 
     $resource['id'] = $post->ID;
-    $resource['url'] = get_post_meta($post->ID ,'cc_resource_meta_url', true);
 
+    $resource['url'] = get_post_meta($post->ID ,'cc_resource_meta_url', true);
     $resource['title'] = get_the_title($post);
     $resource['descriptionHtml'] = get_the_content();
 

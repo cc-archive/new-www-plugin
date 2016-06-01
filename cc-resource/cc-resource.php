@@ -303,7 +303,7 @@ function cc_resource_meta() {
 
 function cc_resource_meta_url( $post ) {
   $cc_resource_meta_url = get_post_meta($post->ID, 'cc_resource_meta_url', true);
-  echo '<input size="120" type="text" name="cc_resource_meta_url" value="' . esc_attr($cc_resource_meta_url) . '" />' . "\n";
+  echo '<input type="url" name="cc_resource_meta_url" value="' . esc_attr($cc_resource_meta_url) . '" />' . "\n";
 }
 
 function cc_resource_description( $post ) {

@@ -299,8 +299,8 @@ add_action( 'add_meta_boxes', 'cc_resource_meta' );
 function cc_resource_meta() {
   add_meta_box('cc_resource_metabox_url', 'Resource URL', 'cc_resource_meta_url', 'resource', 'normal', 'high');
   add_meta_box('description', 'Caption', 'cc_resource_description', 'resource', 'normal', 'high');
-  // Move the default postimagediv (Featured Image) to somewhere more central
-  add_meta_box('postimagediv', 'Image', 'post_thumbnail_meta_box', 'resource', 'normal', 'high');
+  // Move the default postimagediv (Featured Image) to somewhere slightly more central
+  add_meta_box('postimagediv', 'Image', 'post_thumbnail_meta_box', 'resource', 'side', 'high');
 }
 
 add_action( 'do_meta_boxes', 'cc_resource_remove_meta' );

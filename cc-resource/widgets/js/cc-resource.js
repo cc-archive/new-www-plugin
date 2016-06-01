@@ -15,6 +15,7 @@
         'contentHtml': undefined,
         'imageURL': undefined,
         'descriptionHtml': undefined,
+        'editURL': undefined,
         'type': undefined,
         'typeName': undefined,
         'typeIcon': undefined,
@@ -103,6 +104,13 @@
         }).appendTo(this.overlayElem);
 
         this.getDetailsElem().appendTo(this.overlayElem);
+
+        if (data.editURL) {
+            var extraElem = $('<div>').addClass('resource-extra').appendTo(this.overlayElem);
+            $('<a>').addClass('resource-edit-link').attr({
+                'href': data.editURL
+            }).text("Edit").appendTo(extraElem);
+        }
 
         $(container).empty().append(this.resourceElem);
     };

@@ -352,7 +352,7 @@ function cc_ajax_get_resources() {
   $request_start = (int)$_GET['start'];
   $request_count = (int)$_GET['count'];
 
-  if ( !is_user_logged_in() ) {
+  if (!is_user_logged_in()) {
     // Tell anonymous users to cache these for one hour
     $expires = 60 * 60;
     $expires_date = gmdate('D, d M Y H:i:s', time() + $expires);
@@ -379,7 +379,7 @@ function cc_get_resources($request_start, $request_count) {
     'posts_per_page' => $request_count
   ));
   $total_resources = $the_query->found_posts;
-  while ( $the_query->have_posts() ): $the_query->the_post();
+  while ($the_query->have_posts()): $the_query->the_post();
     $post = get_post(get_the_ID());
 
     $resource = array();
@@ -389,6 +389,10 @@ function cc_get_resources($request_start, $request_count) {
     $resource['url'] = get_post_meta($post->ID ,'cc_resource_meta_url', true);
     $resource['title'] = get_the_title($post);
     $resource['descriptionHtml'] = get_the_content();
+
+    if (is_user_logged_in()) {
+      $resource['editURL'] = get_edit_post_link($post->ID, null);
+    }
 
     if (has_post_thumbnail()) {
       $attachment_id = get_post_thumbnail_id($post->ID);

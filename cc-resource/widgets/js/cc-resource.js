@@ -96,6 +96,12 @@
             this.resourceElem.removeClass('loading');
         }
 
+        $('<a>').addClass('resource-click-fallthrough').attr({
+            'href': data.url,
+            'target': '_blank',
+            'rel': 'noopener'
+        }).appendTo(this.overlayElem);
+
         this.getDetailsElem().appendTo(this.overlayElem);
 
         $(container).empty().append(this.resourceElem);

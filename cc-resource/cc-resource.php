@@ -399,6 +399,32 @@ function cc_ajax_get_resources() {
   wp_send_json($resources_obj);
 }
 
+function _attachment_image_attrs($attachment_id, $size) {
+  if (!is_numeric($attachment_id)) return null;
+
+  $attrs = array();
+
+  $image_src = wp_get_attachment_image_src($attachment_id, $size);
+  $image_srcset = wp_get_attachment_image_srcset($attachment_id, $size);
+  $image_sizes = wp_get_attachment_image_sizes($attachment_id, $size);
+
+  if ($image_src) {
+    $attrs['src'] = $image_src[0];
+    $attrs['width'] = $image_src[1];
+    $attrs['height'] = $image_src[2];
+  }
+
+  if ($image_srcset) {
+    $attrs['srcset'] = $image_srcset;
+  }
+
+  if ($image_srcset && $image_sizes) {
+    $attrs['sizes'] = $image_sizes;
+  }
+
+  return $attrs;
+}
+
 function cc_get_resources($request_start, $request_count) {
   $resources = array();
 
@@ -430,10 +456,7 @@ function cc_get_resources($request_start, $request_count) {
 
     if (has_post_thumbnail()) {
       $attachment_id = get_post_thumbnail_id($post->ID);
-      $image_attrs = wp_get_attachment_image_src($attachment_id, 'cc_large_tile');
-      $resource['imageSrc'] = $image_attrs[0];
-      $resource['imageSrcset'] = wp_get_attachment_image_srcset($attachment_id, 'cc_large_tile');
-      $resource['imageSizes'] = wp_get_attachment_image_sizes($attachment_id, 'cc_large_tile');
+      $resource['image'] = _attachment_image_attrs($attachment_id, 'cc_large_tile');
 
       $attachment = get_post($attachment_id);
       $resource['imageTitleHtml'] = $attachment->post_title;
@@ -451,13 +474,7 @@ function cc_get_resources($request_start, $request_count) {
       $resource['type'] = $type->slug;
       $resource['typeName'] = $type->name;
       $resource['typeColor'] = $color;
-
-      if (is_numeric($icon_id)) {
-        $image_attrs = wp_get_attachment_image_src($icon_id, 'cc_resource_icon');
-        $resource['typeIconSrc'] = $image_attrs[0];
-        $resource['typeIconSrcset'] = wp_get_attachment_image_srcset($icon_id, 'cc_resource_icon');
-        $resource['typeIconSizes'] = wp_get_attachment_image_sizes($icon_id, 'cc_resource_icon');
-      }
+      $resource['typeIcon'] = _attachment_image_attrs($icon_id, 'cc_resource_icon');
     }
 
     $platforms = get_the_terms($post->ID ,'cc_resource_platform');
@@ -468,13 +485,7 @@ function cc_get_resources($request_start, $request_count) {
 
       $resource['platform'] = $platform->slug;
       $resource['platformName'] = $platform->name;
-
-      if (is_numeric($logo_id)) {
-        $image_attrs = wp_get_attachment_image_src($logo_id, 'cc_resource_logo');
-        $resource['platformLogoSrc'] = $image_attrs[0];
-        $resource['platformLogoSrcset'] = wp_get_attachment_image_srcset($logo_id, 'cc_resource_logo');
-        $resource['platformLogoSizes'] = wp_get_attachment_image_sizes($logo_id, 'cc_resource_logo');
-      }
+      $resource['platformLogo'] = _attachment_image_attrs($logo_id, 'cc_resource_logo');
     }
 
     $resources[] = $resource;

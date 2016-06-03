@@ -44,12 +44,9 @@
             this.resourceElem.css('background-color', '#'+data.typeColor);
         }
 
-        if (data.typeIconSrc) {
+        if (data.typeIcon) {
             this.iconElem = $('<div>').addClass('resource-icon').appendTo(this.resourceElem);
-            $('<img>').attr({
-                'src': data.typeIconSrc,
-                'srcset': data.typeIconSrcset,
-                'sizes': data.typeIconSizes,
+            $('<img>').attr(data.typeIcon).attr({
                 'alt': data.typeName
             }).appendTo(this.iconElem);
         }
@@ -77,12 +74,9 @@
             captionInner.appendTo(captionWrapper);
         }
 
-        if (data.platformLogoSrc) {
-            $('<img>').attr({
+        if (data.platformLogo) {
+            $('<img>').attr(data.platformLogo).attr({
                 'class': 'resource-logo',
-                'src': data.platformLogoSrc,
-                'srcset': data.platformLogoSrcset,
-                'sizes': data.platformLogoSizes,
                 'alt': data.platformName
             }).appendTo(detailsElem);
         }
@@ -96,10 +90,12 @@
         // We populate the figureElem when the element is first added to the
         // page. Otherwise we end up requesting way too many images at once.
 
-        if (data.imageSrc) {
-            this._preloadImage(data.imageSrc, this.resourceElem);
+        var mainImage = data.image || {};
+
+        if (mainImage.src) {
+            this._preloadImage(mainImage.src, this.resourceElem);
             this.figureElem.addClass('cc-resource-image').css({
-                'background-image': 'url(\'' + data.imageSrc + '\')'
+                'background-image': 'url(\'' + mainImage.src + '\')'
             });
         } else {
             this.figureElem.addClass('cc-resource-text').append(

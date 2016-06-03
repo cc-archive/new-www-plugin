@@ -13,13 +13,19 @@
         'url': undefined,
         'title': undefined,
         'contentHtml': undefined,
-        'imageURL': undefined,
+        'imageSrc': undefined,
+        'imageSrcset': undefined,
+        'imageSizes': undefined,
         'descriptionHtml': undefined,
         'editURL': undefined,
         'type': undefined,
         'typeName': undefined,
-        'typeIcon': undefined,
-        'platformIcon': undefined,
+        'typeIconSrc': undefined,
+        'typeIconSrcset': undefined,
+        'typeIconSizes': undefined,
+        'platformLogoSrc': undefined,
+        'platformLogoSrcset': undefined,
+        'platformLogoSizes': undefined,
         'platformName': undefined
     };
 
@@ -38,10 +44,12 @@
             this.resourceElem.css('background-color', '#'+data.typeColor);
         }
 
-        if (data.typeIcon) {
+        if (data.typeIconSrc) {
             this.iconElem = $('<div>').addClass('resource-icon').appendTo(this.resourceElem);
             $('<img>').attr({
-                'src': data.typeIcon,
+                'src': data.typeIconSrc,
+                'srcset': data.typeIconSrcset,
+                'sizes': data.typeIconSizes,
                 'alt': data.typeName
             }).appendTo(this.iconElem);
         }
@@ -69,10 +77,12 @@
             captionInner.appendTo(captionWrapper);
         }
 
-        if (data.platformIcon) {
+        if (data.platformLogoSrc) {
             $('<img>').attr({
                 'class': 'resource-logo',
-                'src': data.platformIcon,
+                'src': data.platformLogoSrc,
+                'srcset': data.platformLogoSrcset,
+                'sizes': data.platformLogoSizes,
                 'alt': data.platformName
             }).appendTo(detailsElem);
         }
@@ -86,10 +96,10 @@
         // We populate the figureElem when the element is first added to the
         // page. Otherwise we end up requesting way too many images at once.
 
-        if (data.imageURL) {
-            this._preloadImage(data.imageURL, this.resourceElem);
+        if (data.imageSrc) {
+            this._preloadImage(data.imageSrc, this.resourceElem);
             this.figureElem.addClass('cc-resource-image').css({
-                'background-image': 'url(\'' + data.imageURL + '\')'
+                'background-image': 'url(\'' + data.imageSrc + '\')'
             });
         } else {
             this.figureElem.addClass('cc-resource-text').append(

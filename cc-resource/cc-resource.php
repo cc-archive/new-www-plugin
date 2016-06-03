@@ -113,20 +113,18 @@ add_action( 'cc_resource_platform_term_edit_form_tag' , 'cc_resource_add_post_en
 
 add_action( 'cc_resource_platform_edit_form_fields', 'cc_resource_platform_edit_meta_fields', 10, 2 );
 function cc_resource_platform_edit_meta_fields($term) {
-    $logo =  get_term_meta($term->term_id, 'cc_resource_logo');
+    $logo_id =  get_term_meta($term->term_id, 'cc_resource_logo', true);
         ?>
     <tr class="form-field term-group">
       <th scope="row">
         <label for="cc_resource_logo"><?php _e('Logo', 'cc-resource'); ?></label>
       </th>
       <td>
-        <?php
-          wp_nonce_field(basename( __FILE__ ), 'cc_resource_logo_nonce');
-        ?>
-        <?php if (is_array($logo[0]) && array_key_exists('url', $logo[0])): ?>
-          <img src="<?php print $logo[0]['url']; ?>" style="max-width: 200px"><br />
-        <?php endif; ?>
+        <div>
+          <?php if (is_numeric($logo_id)) echo wp_get_attachment_image($logo_id, 'cc_resource_logo'); ?>
+        </div>
 
+        <?php wp_nonce_field(basename( __FILE__ ), 'cc_resource_logo_nonce'); ?>
         <input type="file" id="cc_resource_logo" name="cc_resource_logo" value="" size="25" />
         <p class="description">Upload logo.</p>
       </td>
@@ -135,38 +133,57 @@ function cc_resource_platform_edit_meta_fields($term) {
 
 add_action( 'edited_cc_resource_platform', 'cc_resource_platform_update_meta_fields', 10, 2 );
 function cc_resource_platform_update_meta_fields( $term_id, $tt_id ){
+  $term = get_term($term_id);
 
- /* --- security verification --- */
-    if(!wp_verify_nonce($_POST['cc_resource_logo_nonce'], basename( __FILE__ ))) {
-      return $id;
-    }// end if
+  /* --- security verification --- */
 
-    if(defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) {
-      return $id;
-    } // end if
+  if(!wp_verify_nonce($_POST['cc_resource_logo_nonce'], basename( __FILE__ ))) {
+    return $id;
+  }// end if
 
-    // Make sure the file array isn't empty
-    if(!empty($_FILES['cc_resource_logo']['name'])) {
-      // Setup the array of supported file types. In this case, it's just PDF.
-      $supported_types = array('image/jpeg', 'image/png', 'image/gif');
-      // Get the file type of the upload
-      $arr_file_type = wp_check_filetype(basename($_FILES['cc_resource_logo']['name']));
-      $uploaded_type = $arr_file_type['type'];
-      // Check if the type is supported. If not, throw an error.
-      if(in_array($uploaded_type, $supported_types)) {
-        // Use the WordPress API to upload the file
-        $upload = wp_upload_bits($_FILES['cc_resource_logo']['name'], null, file_get_contents($_FILES['cc_resource_logo']['tmp_name']));
-        if(isset($upload['error']) && $upload['error'] != 0) {
-          wp_die('There was an error uploading your file. The error is: ' . $upload['error']);
-        } else {
-          delete_term_meta ($term_id, 'cc_resource_logo');
-          add_term_meta($term_id, 'cc_resource_logo', $upload);
-          update_term_meta($term_id, 'cc_resource_logo', $upload);
-        } // end if/else
+  if(defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) {
+    return $id;
+  } // end if
+
+  if (isset($_FILES['cc_resource_logo']) && ($_FILES['cc_resource_logo']['size'] > 0)) {
+    // Get the type of the uploaded file. This is returned as "type/extension"
+    $arr_file_type = wp_check_filetype(basename($_FILES['cc_resource_logo']['name']));
+    $uploaded_file_type = $arr_file_type['type'];
+
+    // We only allow PNG uploads here
+    $allowed_file_types = array('image/png');
+
+    if (in_array($uploaded_file_type, $allowed_file_types)) {
+      // The uploaded image is a valid format...
+      $uploaded_file = wp_handle_upload($_FILES['cc_resource_logo'], array('test_form' => false));
+      if (isset($uploaded_file['file'])) {
+        $file_path = $uploaded_file['file'];
+
+        $attachment_data = array(
+            'post_mime_type' => $uploaded_file_type,
+            'post_title' => "Resource Platform: " . $term->name,
+            'post_content' => '',
+            'post_status' => 'inherit'
+        );
+
+        $attachment_id = wp_insert_attachment($attachment_data, $file_path);
+        require_once(ABSPATH . "wp-admin" . '/includes/image.php');
+        $attachment_meta = wp_generate_attachment_metadata($attachment_id, $file_path);
+        wp_update_attachment_metadata($attachment_id,  $attachment_meta);
+
+        $existing_attachment_id = (int) get_term_meta($term_id, 'cc_resource_logo', true);
+        if (is_numeric($existing_attachment_id)) {
+            wp_delete_attachment($existing_attachment_id);
+        }
+        update_term_meta($term_id, 'cc_resource_logo', $attachment_id);
       } else {
-          wp_die("The file type that you've uploaded is not valid.");
-      } // end if/else
-    } // end if
+        // wp_handle_upload returned some kind of error
+        wp_die('There was an error uploading your file: ' . $upload['error']);
+      }
+    } else {
+      wp_die("Please upload the platform logo in one of these formats: " . implode(' ', $allowed_file_types));
+    }
+  }
 }
 
 //
@@ -218,74 +235,90 @@ add_action( 'cc_resource_type_term_edit_form_tag' , 'cc_resource_add_post_enctyp
 
 add_action( 'cc_resource_type_edit_form_fields', 'cc_resource_type_edit_meta_fields', 10, 2 );
 function cc_resource_type_edit_meta_fields($term) {
-    $logo  =  get_term_meta($term->term_id, 'cc_resource_icon');
-    $color =  get_term_meta($term->term_id, 'cc_resource_color');
-        ?>
-    <tr class="form-field term-group">
-      <th scope="row">
-        <label for="cc_resource_icon"><?php _e('Color', 'cc-resource'); ?></label>
-      </th>
-      <td>
-        #<input type="text" id="cc_resource_color" name="cc_resource_color" size="6" maxlength="6" value="<?php print $color[0]; ?>" size="25" />
-        <p class="description">Hex color, for example "FC99D3".</p>
-      </td>
-    </tr>
-    <tr class="form-field term-group">
-      <th scope="row">
-        <label for="cc_resource_icon"><?php _e('Icon', 'cc-resource'); ?></label>
-      </th>
-      <td>
-        <?php
-          wp_nonce_field(basename( __FILE__ ), 'cc_resource_icon_nonce');
-        ?>
-        <?php if (is_array($logo[0]) && array_key_exists('url', $logo[0])): ?>
-          <img src="<?php print $logo[0]['url']; ?>" style="max-width: 200px"><br />
-        <?php endif; ?>
+  $icon_id = get_term_meta($term->term_id, 'cc_resource_icon', true);
+  $color =  get_term_meta($term->term_id, 'cc_resource_color', true);
+      ?>
+  <tr class="form-field term-group">
+    <th scope="row">
+      <label for="cc_resource_icon"><?php _e('Color', 'cc-resource'); ?></label>
+    </th>
+    <td>
+      #<input type="text" id="cc_resource_color" name="cc_resource_color" size="6" maxlength="6" value="<?php print $color; ?>" size="25" />
+      <p class="description">Hex color, for example "FC99D3".</p>
+    </td>
+  </tr>
+  <tr class="form-field term-group">
+    <th scope="row">
+      <label for="cc_resource_icon"><?php _e('Icon', 'cc-resource'); ?></label>
+    </th>
+    <td>
+      <div>
+        <?php if (is_numeric($icon_id)) echo wp_get_attachment_image($icon_id, 'cc_resource_icon'); ?>
+      </div>
 
-        <input type="file" id="cc_resource_icon" name="cc_resource_icon" value="" size="25" />
-        <p class="description">Upload icon.</p>
-      </td>
-    </tr><?php
+      <?php wp_nonce_field(basename( __FILE__ ), 'cc_resource_icon_nonce'); ?>
+      <input type="file" id="cc_resource_icon" name="cc_resource_icon" value="" size="25" />
+      <p class="description">Upload icon.</p>
+    </td>
+  </tr><?php
 }
 
 add_action( 'edited_cc_resource_type', 'cc_resource_type_update_meta_fields', 10, 2 );
 function cc_resource_type_update_meta_fields( $term_id, $tt_id ){
+  $term = get_term($term_id);
 
   if (isset($_POST['cc_resource_color'])){
     update_term_meta($term_id, 'cc_resource_color', strtoupper(substr($_POST['cc_resource_color'], 0,6)));
   }
 
- /* --- security verification --- */
-    if(!wp_verify_nonce($_POST['cc_resource_icon_nonce'], basename( __FILE__ ))) {
-      return $id;
-    }// end if
+  /* --- security verification --- */
+  if (!wp_verify_nonce($_POST['cc_resource_icon_nonce'], basename( __FILE__ ))) {
+    return $id;
+  }
 
-    if(defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) {
-      return $id;
-    } // end if
+  if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) {
+    return $id;
+  }
 
-    // Make sure the file array isn't empty
-    if(!empty($_FILES['cc_resource_icon']['name'])) {
-      // Setup the array of supported file types. In this case, it's just PDF.
-      $supported_types = array('image/jpeg', 'image/png', 'image/gif');
-      // Get the file type of the upload
-      $arr_file_type = wp_check_filetype(basename($_FILES['cc_resource_icon']['name']));
-      $uploaded_type = $arr_file_type['type'];
-      // Check if the type is supported. If not, throw an error.
-      if(in_array($uploaded_type, $supported_types)) {
-        // Use the WordPress API to upload the file
-        $upload = wp_upload_bits($_FILES['cc_resource_icon']['name'], null, file_get_contents($_FILES['cc_resource_icon']['tmp_name']));
-        if(isset($upload['error']) && $upload['error'] != 0) {
-          wp_die('There was an error uploading your file. The error is: ' . $upload['error']);
-        } else {
-          delete_term_meta ($term_id, 'cc_resource_icon');
-          add_term_meta($term_id, 'cc_resource_icon', $upload);
-          update_term_meta($term_id, 'cc_resource_icon', $upload);
-        } // end if/else
+  if (isset($_FILES['cc_resource_icon']) && ($_FILES['cc_resource_icon']['size'] > 0)) {
+    // Get the type of the uploaded file. This is returned as "type/extension"
+    $arr_file_type = wp_check_filetype(basename($_FILES['cc_resource_icon']['name']));
+    $uploaded_file_type = $arr_file_type['type'];
+
+    // We only allow PNG uploads here
+    $allowed_file_types = array('image/png');
+
+    if (in_array($uploaded_file_type, $allowed_file_types)) {
+      // The uploaded image is a valid format...
+      $uploaded_file = wp_handle_upload($_FILES['cc_resource_icon'], array('test_form' => false));
+      if (isset($uploaded_file['file'])) {
+        $file_path = $uploaded_file['file'];
+
+        $attachment_data = array(
+            'post_mime_type' => $uploaded_file_type,
+            'post_title' => "Resource Type: " . $term->name,
+            'post_content' => '',
+            'post_status' => 'inherit'
+        );
+
+        $attachment_id = wp_insert_attachment($attachment_data, $file_path);
+        require_once(ABSPATH . "wp-admin" . '/includes/image.php');
+        $attachment_meta = wp_generate_attachment_metadata($attachment_id, $file_path);
+        wp_update_attachment_metadata($attachment_id,  $attachment_meta);
+
+        $existing_attachment_id = (int) get_term_meta($term_id, 'cc_resource_icon', true);
+        if (is_numeric($existing_attachment_id)) {
+            wp_delete_attachment($existing_attachment_id);
+        }
+        update_term_meta($term_id, 'cc_resource_icon', $attachment_id);
       } else {
-          wp_die("The file type that you've uploaded is not valid.");
-      } // end if/else
-    } // end if
+        // wp_handle_upload returned some kind of error
+        wp_die('There was an error uploading your file: ' . $upload['error']);
+      }
+    } else {
+      wp_die("Please upload the icon in one of these formats: " . implode(' ', $allowed_file_types));
+    }
+  }
 }
 
 //
@@ -342,8 +375,9 @@ function cc_resource_meta_save( $post_ID ) {
 
 add_action( 'after_setup_theme', 'cc_resource_image_sizes' );
 function cc_resource_image_sizes() {
+  add_image_size( 'cc_resource_logo', 140, 40, false );
+  add_image_size( 'cc_resource_icon', 50, 50, false );
   add_image_size( 'cc_large_tile', 350, 350, array('center', 'center') );
-
 }
 
 add_action( 'wp_ajax_get_resources', 'cc_ajax_get_resources' );
@@ -396,9 +430,12 @@ function cc_get_resources($request_start, $request_count) {
 
     if (has_post_thumbnail()) {
       $attachment_id = get_post_thumbnail_id($post->ID);
-      $attachment = get_post($attachment_id);
       $image_attrs = wp_get_attachment_image_src($attachment_id, 'cc_large_tile');
-      $resource['imageURL'] = $image_attrs[0];
+      $resource['imageSrc'] = $image_attrs[0];
+      $resource['imageSrcset'] = wp_get_attachment_image_srcset($attachment_id, 'cc_large_tile');
+      $resource['imageSizes'] = wp_get_attachment_image_sizes($attachment_id, 'cc_large_tile');
+
+      $attachment = get_post($attachment_id);
       $resource['imageTitleHtml'] = $attachment->post_title;
       $resource['imageCaptionHtml'] = $attachment->post_excerpt;
       $resource['imageDescriptionHtml'] = $attachment->post_content;
@@ -408,15 +445,18 @@ function cc_get_resources($request_start, $request_count) {
     $type = is_array($types) ? array_pop($types) : NULL;
 
     if ($type) {
-      $icon = get_term_meta($type->term_id, 'cc_resource_icon', true);
+      $icon_id = get_term_meta($type->term_id, 'cc_resource_icon', true);
       $color = get_term_meta($type->term_id, 'cc_resource_color', true);
 
       $resource['type'] = $type->slug;
       $resource['typeName'] = $type->name;
       $resource['typeColor'] = $color;
 
-      if (is_array($icon) && isset($icon['url'])) {
-        $resource['typeIcon'] = $icon['url'];
+      if (is_numeric($icon_id)) {
+        $image_attrs = wp_get_attachment_image_src($icon_id, 'cc_resource_icon');
+        $resource['typeIconSrc'] = $image_attrs[0];
+        $resource['typeIconSrcset'] = wp_get_attachment_image_srcset($icon_id, 'cc_resource_icon');
+        $resource['typeIconSizes'] = wp_get_attachment_image_sizes($icon_id, 'cc_resource_icon');
       }
     }
 
@@ -424,13 +464,16 @@ function cc_get_resources($request_start, $request_count) {
     $platform = is_array($platforms) ? array_pop($platforms) : NULL;
 
     if ($platform) {
-      $logo = get_term_meta($platform->term_id, 'cc_resource_logo', true);
+      $logo_id = get_term_meta($platform->term_id, 'cc_resource_logo', true);
 
       $resource['platform'] = $platform->slug;
-      // TODO: Platform name
+      $resource['platformName'] = $platform->name;
 
-      if (is_array($logo) && isset($logo['url'])){
-        $resource['platformIcon'] = $logo['url'];
+      if (is_numeric($logo_id)) {
+        $image_attrs = wp_get_attachment_image_src($logo_id, 'cc_resource_logo');
+        $resource['platformLogoSrc'] = $image_attrs[0];
+        $resource['platformLogoSrcset'] = wp_get_attachment_image_srcset($logo_id, 'cc_resource_logo');
+        $resource['platformLogoSizes'] = wp_get_attachment_image_sizes($logo_id, 'cc_resource_logo');
       }
     }
 

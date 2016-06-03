@@ -28,6 +28,7 @@
         this.resourceElem = $('<div>').addClass('resource loading');
         this.figureElem = $('<figure>').appendTo(this.resourceElem);
         this.overlayElem = $('<div>').addClass('overlay').appendTo(this.resourceElem);
+        this.iconElem = undefined;
 
         if (data.type) {
             this.resourceElem.addClass('resource-type-'+data.type);
@@ -38,11 +39,11 @@
         }
 
         if (data.typeIcon) {
+            this.iconElem = $('<div>').addClass('resource-icon').appendTo(this.resourceElem);
             $('<img>').attr({
-                'class': 'resource-icon',
                 'src': data.typeIcon,
                 'alt': data.typeName
-            }).appendTo(this.resourceElem);
+            }).appendTo(this.iconElem);
         }
     };
 

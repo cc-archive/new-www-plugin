@@ -40,10 +40,6 @@
             this.resourceElem.addClass('resource-type-'+data.type);
         }
 
-        if (data.typeColor) {
-            this.resourceElem.css('background-color', '#'+data.typeColor);
-        }
-
         if (data.typeIcon) {
             this.iconElem = $('<div>').addClass('resource-icon').appendTo(this.resourceElem);
             $('<img>').attr(data.typeIcon).attr({
@@ -101,6 +97,7 @@
             this.figureElem.addClass('cc-resource-text').append(
                 $('<p>').html(data.title)
             );
+            if (data.typeColor) this.figureElem.css('background-color', '#'+data.typeColor);
             this.resourceElem.removeClass('loading');
         }
 

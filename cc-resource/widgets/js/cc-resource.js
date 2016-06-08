@@ -312,17 +312,11 @@
             scrollBottom -= footerElem.height();
         }
 
-        $('.resource-tile', this.container).each(function(index, resourceTile) {
-            var tileTop = $(resourceTile).offset().top,
-                tileBottom = tileTop + $(resourceTile).height();
-            if (scrollTop < tileBottom && scrollBottom > tileTop) {
-                // It is tempting to remove offscreen resources from the DOM,
-                // but modern browsers do the important bits automatically.
-                $(resourceTile).removeClass('offscreen offscreen-above offscreen-below never-shown').addClass('onscreen')
-            } else if (scrollTop > tileBottom) {
-                $(resourceTile).removeClass('onscreen offscreen-below').addClass('offscreen offscreen-above');
-            } else {
-                $(resourceTile).removeClass('onscreen offscreen-above').addClass('offscreen offscreen-below');
+        var newTiles = $('.resource-tile.offscreen', this.container);
+        $(newTiles).each(function(index, resourceTile) {
+            var tileTop = $(resourceTile).offset().top;
+            if (scrollBottom > tileTop) {
+                $(resourceTile).removeClass('offscreen');
             }
         });
     };
@@ -345,7 +339,7 @@
 
         for (var i = 0; i < count; i++) {
             var resourceTile = $('<div>').addClass('resource-tile empty');
-            if (!options.initial) resourceTile.addClass('never-shown');
+            if (!options.initial) resourceTile.addClass('offscreen');
             this.emptyTiles.push(resourceTile);
             resourceTile.appendTo(this.container);
         }
@@ -428,8 +422,6 @@
         };
 
         var onScrollCb = function(e, params) {
-            resourceGrid.updateOnScreen();
-
             var newTilesCount = 0,
                 velocity = params['velocity'],
                 bottom = params['bottom'];
@@ -443,6 +435,8 @@
             if (newTilesCount > 0) {
                 fillEmptyResourceTiles();
             }
+
+            resourceGrid.updateOnScreen();
         };
 
         resourceFeed = new CCResourceFeed(CC_RESOURCE.ajaxurl, {

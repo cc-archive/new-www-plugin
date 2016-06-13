@@ -3,3 +3,8 @@
 #field_3_14 {
   display: none;
 }
+
+.paypal-toggle {
+  cursor: pointer;
+  cursor: hand;
+}

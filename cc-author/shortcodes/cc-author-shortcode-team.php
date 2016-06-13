@@ -80,9 +80,9 @@ function cc_team_listing_shortcode( $atts ) {
           if (filter_var($user->cc_linkedin, FILTER_VALIDATE_URL)){
             $output .= '  <a href="' . $user->cc_linkedin . '"><span class="genericon genericon-linkedin"></span></a>';
           }
-          if (filter_var($user->user_email, FILTER_VALIDATE_EMAIL)){
+          /* if (filter_var($user->user_email, FILTER_VALIDATE_EMAIL)){
             $output .= '  <a href="mailto:' . $user->user_email . '"><span class="genericon genericon-mail"></span></a>';
-          }
+          } */
           $output .= '  </div>';
           $output .= '</li>';
 

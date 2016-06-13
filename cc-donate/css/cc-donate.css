@@ -4,7 +4,15 @@
   display: none;
 }
 
+#field_3_26 {
+  position: relative;
+}
+
 .paypal-toggle {
   cursor: pointer;
   cursor: hand;
+  position: absolute;
+  top: 70px;
+  font-size: .9em;
+  color: #999999;
 }

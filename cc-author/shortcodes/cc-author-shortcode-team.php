@@ -100,18 +100,34 @@ function cc_blockquote_shortcode( $atts ) {
   $image    = $attributes['image'];
   $quote = $attributes['quote'];
   $name = $attributes['name'];
-  $url = $attributes['url'];
+  $url = isset($attributes['url']) ? $attributes['url'] : NULL;
 
 	$output = '';
   $output  .= '<blockquote class="cc-short-block">';
   if ($image) {
-		$output .= '<div class="blockquote-image"><a href="'.$url.'"><img src="'.$image .'" alt="'.$name.'"></a></div>';
+		$output .= '<div class="blockquote-image">';
+    if ($url) {
+      $output .= '<a href="'.$url.'">';
+    }
+    $output .= '<img src="'.$image .'" alt="'.$name.'">';
+    if ($url) {
+      $output .= '</a>';
+    }
+    $output .= '</div>';
   }
 	if($quote){
 		$output .= '<div class="blockquote-text"><div class="blockquote-text-inner">'.$quote. '</div></div><div class="clear-all"></div>';
 	}
 	if($name){
-		$output .= '<div class="blockqoute-user-title"><a href="'.$url.'">'.$name.'</a></div></blockquote>';
+		$output .= '<div class="blockqoute-user-title">';
+    if ($url) {
+      $output .= '<a href="'.$url.'">';
+    }
+    $output .= $name;
+    if ($url) {
+      $output .= '</a>';
+    }
+    $output .= '</div></blockquote>';
 	}
   return $output;
 }

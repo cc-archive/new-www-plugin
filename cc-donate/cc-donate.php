@@ -42,13 +42,24 @@ function cc_donate_save_form_setting($form) {
     return $form;
 }
 
+
+add_action( 'wp_enqueue_scripts', 'cc_donate_register_plugin_styles' );
+
+/**
+ * Register style sheet.
+ */
+function cc_donate_register_plugin_styles() {
+  wp_register_style( 'cc-donate', plugins_url( 'cc-donate/css/cc-donate.css' ) );
+  wp_enqueue_style( 'cc-donate' );
+  wp_enqueue_script('cc-donate-js', plugin_dir_url( __FILE__ ) . 'js/cc-donate.js', array('cc-common'), '201606013', true);
+}
+
 add_filter("gform_pre_render", "populate_previous_page_data");
 function populate_previous_page_data($form){
 
   $is_donation_form = rgar($form, 'is_cc_donation_form');
 
   if ($is_donation_form == true){
-
     $pageNumber = rgpost("gform_target_page_number_{$form["id"]}");
     $html = NULL;
 

@@ -1,0 +1,5 @@
+ /* Hide the credit card / paypal toggle */
+
+#field_3_14 {
+  display: none;
+}

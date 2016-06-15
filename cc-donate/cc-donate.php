@@ -25,7 +25,6 @@
  *
  */
 
-
 add_filter( 'gform_form_settings', 'cc_donate_edit_form_setting', 10, 2 );
 function cc_donate_edit_form_setting( $settings, $form ) {
     $settings['Form Button']['is_cc_donation_form'] = '
@@ -126,6 +125,55 @@ function populate_previous_page_data($form){
   }
   return $form;
 }
+
+/* --- --- */
+
+add_filter( 'gform_field_validation', 'cc_donate_address_validation', 10, 4 );
+function cc_donate_address_validation( $result, $value, $form, $field ) {
+
+  $is_donation_form = rgar($form, 'is_cc_donation_form');
+
+  if (! $is_donation_form){
+    return $result;
+  }
+
+  if ($field->type != 'address'){
+    return $result;
+  }
+
+  //address field will pass $value as an array with each of the elements as an item within the array, the key is the field id
+  if ( ! $result['is_valid'] && $result['message'] == 'This field is required. Please enter a complete address.' ) {
+    //address failed validation because of a required item not being filled out
+    //do custom validation
+    $street  = rgar( $value, $field->id . '.1' );
+    $street2 = rgar( $value, $field->id . '.2' );
+    $city    = rgar( $value, $field->id . '.3' );
+    $state   = rgar( $value, $field->id . '.4' );
+    $zip     = rgar( $value, $field->id . '.5' );
+    $country = rgar( $value, $field->id . '.6' );
+
+    if ($country == 'United States' || $country == 'Canada'){
+      if ( empty( $street ) || empty( $city ) || empty( $state ) ) {
+        $result['is_valid'] = false;
+        $result['message']  = 'Address required. Please enter at least a street, city, and state/province.';
+      } else {
+        $result['is_valid'] = true;
+        $result['message']  = '';
+      }
+    } else {
+      if ( empty( $street ) || empty( $city ) ) {
+        $result['is_valid'] = false;
+        $result['message']  = 'Address required. Please enter at least a street and city.';
+      } else {
+        $result['is_valid'] = true;
+        $result['message']  = '';
+      }
+    }
+  }
+  return $result;
+}
+
+
 
 /* -- Homepage donate widget -- */
 // Wrap the form (2) in a wrapper div.

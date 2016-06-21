@@ -1,5 +1,9 @@
  /* Hide the credit card / paypal toggle */
 
+#gform_page_3_3{
+  padding-bottom: 40px;
+}
+
 #field_3_14 {
   display: none;
 }
@@ -8,11 +12,25 @@
   position: relative;
 }
 
+@media only screen and (min-width : 44.375em) {
+  /* Styles */
+  .paypal-toggle {
+    padding-left: 50px;
+  }
+}
+
+@media only screen and (min-width : 75em) {
+  /* Styles */
+  .paypal-toggle {
+    padding-left: 175px;
+  }
+}
+
 .paypal-toggle {
   cursor: pointer;
   cursor: hand;
   position: absolute;
-  top: 80px;
+  top: 100px;
   font-size: .9em;
   color: #999999;
 }

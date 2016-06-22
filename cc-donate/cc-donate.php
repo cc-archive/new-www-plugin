@@ -90,7 +90,7 @@ function populate_previous_page_data($form){
             $value = rgpost('input_' . $cc_amount_monthly_id . '_other');
             $field['defaultValue'] = $value;
             $_POST['input_' . $field_amount_id] = $value;
-            $html = '$' . htmlentities(number_format(floatval($value), 2)) . ' (monthly)';
+            $html = '$' . htmlentities(number_format(floatval(ltrim($value, ' $')), 2)) . ' (monthly)';
           } else {
             $value = rgpost('input_' . $cc_amount_monthly_id);
             $field['defaultValue'] = $value;
@@ -102,7 +102,7 @@ function populate_previous_page_data($form){
             $value = rgpost('input_' . $field_amount_onetime_id . '_other');
             $field['defaultValue'] = $value;
             $_POST['input_' . $field_amount_id] = $value;
-            $html = '$' . htmlentities(number_format(floatval($value), 2)) . ' (monthly)';
+            $html = '$' . htmlentities(number_format(floatval(ltrim($value, ' $')), 2)) . ' (monthly)';
           } else {
             $value = rgpost('input_' . $field_amount_onetime_id);
             $field['defaultValue'] = $value;
@@ -127,6 +127,26 @@ function populate_previous_page_data($form){
 }
 
 /* --- --- */
+
+
+add_filter( 'gform_field_validation', 'cc_donate_price_validation', 12, 4);
+function cc_donate_price_validation( $result, $value, $form, $field ) {
+
+  $is_donation_form = rgar($form, 'is_cc_donation_form');
+
+  if (! $is_donation_form){
+    return $result;
+  }
+
+  if ($field->adminLabel == 'cc_amount_monthly' || $field->adminLabel == 'cc_amount_onetime'){
+    if (intval(ltrim($value, ' $')) < 1){
+      $result['is_valid'] = false;
+      $result['message']  = 'Donation amount must at least $1.';
+    }
+  }
+
+  return $result;
+}
 
 add_filter( 'gform_field_validation', 'cc_donate_address_validation', 10, 4 );
 function cc_donate_address_validation( $result, $value, $form, $field ) {

@@ -102,7 +102,7 @@ function populate_previous_page_data($form){
             $value = rgpost('input_' . $field_amount_onetime_id . '_other');
             $field['defaultValue'] = $value;
             $_POST['input_' . $field_amount_id] = $value;
-            $html = '$' . htmlentities(number_format(floatval(ltrim($value, ' $')), 2)) . ' (monthly)';
+            $html = '$' . htmlentities(number_format(floatval(ltrim($value, ' $')), 2)) . ' (one-time)';
           } else {
             $value = rgpost('input_' . $field_amount_onetime_id);
             $field['defaultValue'] = $value;

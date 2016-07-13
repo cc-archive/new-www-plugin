@@ -79,7 +79,7 @@ class CreativeCommons_Homepage_WhatsHappening_Widget extends WP_Widget {
                 </div>
              <?php } ?>
           </div>
-          <div class="more"><a href="/news">More News<i class="cc-icon-right-dir"></i></a></div>
+          <div class="more"><a href="/blog">More News<i class="cc-icon-right-dir"></i></a></div>
         </div>
       </div>
 

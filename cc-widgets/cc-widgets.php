@@ -32,8 +32,6 @@ include_once ('widgets/cc-related-news-widget.php');
 function cc_widgets_image_sizes() {
   add_image_size( 'cc_feature_thumbnail', 270, 155, false );
   add_image_size( 'cc_list_post_thumbnail', 440, 250, array( 'right', 'bottom' ) );
-	
-
 }
 add_action( 'after_setup_theme', 'cc_widgets_image_sizes' );
 
@@ -67,3 +65,63 @@ function cc_widgets_get_related_news_query($term, $count) {
   );
   return new WP_Query( $args );
 }
+
+/*
+ * function cc_widgets_get_featured_post_ids()
+ *
+ * Get the featured/hero post_ids so we can reduce repetitive post displays.
+ *
+ * return @array post_ids
+ *
+ */
+
+function cc_widgets_get_featured_post_ids(){
+
+  $all_widgets = wp_get_sidebars_widgets();
+  $featured_post_ids = array();
+  $suppress_featured_posts = FALSE;
+
+  foreach ($all_widgets as $region => $widgets){
+    if (is_array($widgets) && count($widgets)){
+      foreach ($widgets as $i => $widget_title){
+        if (strpos($widget_title, 'creativecommons_news_features_widget') !== FALSE){
+          $suppress_featured_posts = TRUE;
+          break;
+        }
+      }
+    }
+    if ($suppress_featured_posts == TRUE){
+      break;
+    }
+  }
+
+  if ($suppress_featured_posts == TRUE){
+    $the_query = cc_widgets_get_homepage_features_query('hero', 1);
+    if ( $the_query->have_posts() ){
+      $posts = $the_query->get_posts();
+      foreach ( $posts as $post ) {
+        $featured_post_ids[] += $post->ID;
+        $hero_post_id = $post->ID;
+      }
+    }
+    $the_query = cc_widgets_get_homepage_features_query('featured', 5);
+    if ( $the_query->have_posts() ){
+      $posts = $the_query->get_posts();
+      foreach ( $posts as $post ) {
+        if ($post->ID == $hero_post_id){
+          continue;
+        }
+        $featured_post_ids[] += $post->ID;
+        if (count($featured_post_ids) == 5){
+          break;
+        }
+      }
+    }
+    wp_reset_postdata();
+  }
+
+  return $featured_post_ids;
+}
+
+
+

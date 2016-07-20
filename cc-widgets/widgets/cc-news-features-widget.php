@@ -34,6 +34,7 @@ class CreativeCommons_News_Features_Widget extends WP_Widget {
             $the_query = cc_widgets_get_homepage_features_query('hero', 1);
             while ( $the_query->have_posts() ){
               $the_query->the_post();
+              $hero_post_id = get_the_ID();
               $url = get_permalink();
               $categories = get_the_category();
               if ( ! empty( $categories ) ) {
@@ -69,9 +70,14 @@ class CreativeCommons_News_Features_Widget extends WP_Widget {
           <div class="features posts-featured">
             <?php
             // The four other features
-            $the_query = cc_widgets_get_homepage_features_query('featured', 4);
+            $the_query = cc_widgets_get_homepage_features_query('featured', 5);
             while ( $the_query->have_posts() ){
               $the_query->the_post();
+              if (get_the_ID() == $hero_post_id){
+                continue;
+              } else {
+                $posts_displayed++;
+              }
               $url = get_permalink();
               $categories = get_the_category();
               if ( ! empty( $categories ) ) {
@@ -104,6 +110,7 @@ class CreativeCommons_News_Features_Widget extends WP_Widget {
 										</div>
                   </div>
                 </div>
+                <?php if ($posts_displayed == 4) break; ?>
              <?php } ?>
           </div>
         </div>

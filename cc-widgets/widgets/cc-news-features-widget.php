@@ -35,6 +35,11 @@ class CreativeCommons_News_Features_Widget extends WP_Widget {
             while ( $the_query->have_posts() ){
               $the_query->the_post();
               $hero_post_id = get_the_ID();
+              if ( class_exists( 'coauthors_plus' ) ) { // Get the Co-Authors for the post
+                $hero_authors = get_coauthors($hero_post_id);
+              } else {
+                $hero_authors = array();
+              }
               $url = get_permalink();
               $categories = get_the_category();
               if ( ! empty( $categories ) ) {
@@ -53,12 +58,26 @@ class CreativeCommons_News_Features_Widget extends WP_Widget {
                       <div class="author-image">
                         <?php
                           $author_bio_avatar_size = apply_filters( 'twentysixteen_author_bio_avatar_size', 38 );
-                          echo '<a href="' . get_author_posts_url(get_the_author_meta( 'ID' ), get_the_author_meta( 'user_nicename' )) . '">' . get_avatar( get_the_author_meta( 'user_email' ), $author_bio_avatar_size ) . '</a>';
+                          if (count($hero_authors)){
+                            foreach ($hero_authors as $an_author){
+                              echo '<a href="' . get_author_posts_url(get_the_author_meta( 'ID', $an_author->ID ), get_the_author_meta( 'user_nicename', $an_author->ID )) . '">' . get_avatar( get_the_author_meta( 'user_email', $an_author->ID ), $author_bio_avatar_size ) . '</a>';
+                            }
+                          } else {
+                            echo '<a href="' . get_author_posts_url(get_the_author_meta( 'ID' ), get_the_author_meta( 'user_nicename' )) . '">' . get_avatar( get_the_author_meta( 'user_email' ), $author_bio_avatar_size ) . '</a>';
+                          }
                         ?>
                       </div>
                       <div class="author-info-group">
                         <div class="author-date"><?php the_date(); ?></div>
-                        <div class="author-name"><h4><?php the_author_posts_link(); ?></h4></div>
+                        <div class="author-name"><h4>
+                          <?php
+                            if ( function_exists( 'coauthors_posts_links' ) ) {
+                                coauthors_posts_links();
+                            } else {
+                                the_author_posts_link();
+                            }
+                          ?>
+                        </h4></div>
                       </div>
                     </div>
                     <div class="excerpt"><?php print the_excerpt(); ?></div>
@@ -77,6 +96,12 @@ class CreativeCommons_News_Features_Widget extends WP_Widget {
                 continue;
               } else {
                 $posts_displayed++;
+              }
+              $featured_post_id = get_the_ID();
+              if ( class_exists( 'coauthors_plus' ) ) { // Get the Co-Authors for the post
+                $featured_authors = get_coauthors($featured_post_id);
+              } else {
+                $featured_authors = array();
               }
               $url = get_permalink();
               $categories = get_the_category();
@@ -97,12 +122,24 @@ class CreativeCommons_News_Features_Widget extends WP_Widget {
 	                      <div class="author-image">
 	                      <?php
 	                        $author_bio_avatar_size = apply_filters( 'twentysixteen_author_bio_avatar_size', 38 );
-	                        echo get_avatar( get_the_author_meta( 'user_email' ), $author_bio_avatar_size );
+                          if (count($featured_authors)){
+                            foreach ($featured_authors as $an_author){
+                              echo '<a href="' . get_author_posts_url(get_the_author_meta( 'ID', $an_author->ID ), get_the_author_meta( 'user_nicename', $an_author->ID )) . '">' . get_avatar( get_the_author_meta( 'user_email', $an_author->ID ), $author_bio_avatar_size ) . '</a>';
+                            }
+                          } else {
+                            echo get_avatar( get_the_author_meta( 'user_email' ), $author_bio_avatar_size );
+                          }
 	                        ?>
 	                      </div>
 	                      <div class="author-info-group">
 	                        <div class="author-date"><?php the_date(); ?></div>
-                          <div class="author-name"><h4><?php the_author_posts_link(); ?></h4></div>
+                          <div class="author-name"><h4> <?php
+                            if ( function_exists( 'coauthors_posts_links' ) ) {
+                                coauthors_posts_links();
+                            } else {
+                                the_author_posts_link();
+                            }
+                          ?></h4></div>
 	                      </div>
 	                    </div>
 	                    <div class="excerpt"><?php print the_excerpt(); ?></div>

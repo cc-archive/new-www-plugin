@@ -57,7 +57,15 @@ class CreativeCommons_Homepage_WhatsHappening_Widget extends WP_Widget {
           </div>
           <div class="posts-featured">
             <?php
-            // The four other features
+            // The four other features.
+            // If we have a special feature, then it is 3 featured and 1 special feature.
+            // Otherwise, it is 4 features.
+            $have_special_feature = FALSE;
+            $the_special_query = cc_widgets_get_homepage_features_query('special-feature', 1);
+            if ($the_special_query->have_posts()){
+              $have_special_feature = TRUE;
+            }
+
             $the_query = cc_widgets_get_homepage_features_query('featured', 5);
             $posts_displayed = 0;
             while ( $the_query->have_posts() ){
@@ -84,8 +92,30 @@ class CreativeCommons_Homepage_WhatsHappening_Widget extends WP_Widget {
                     <div class="category"><?php print $category_link; ?></div>
                   </div>
                 </div>
-                <?php if ($posts_displayed == 4) break; ?>
+                <?php if ($posts_displayed == 4 || ($posts_displayed == 3 && $have_special_feature == TRUE)) break; ?>
              <?php } ?>
+            <?php if ($have_special_feature == TRUE): ?>
+            <?php
+              $the_special_query->the_post();
+              $url = get_permalink();
+              $categories = get_the_category();
+              if ( ! empty( $categories ) ) {
+                $category_link  ='<a href="' . esc_url( get_category_link( $categories[0]->term_id ) ) . '">' . esc_html( $categories[0]->name ) . '</a>';
+              } else {
+                $category_link = NULL;
+              }
+              ?>
+                <div class="item">
+                  <div class="thumbnail">
+                    <a href="<?php print $url; ?>"><?php print the_post_thumbnail(); ?></a>
+                  </div>
+                  <div class="teaser">
+                    <h3 class="title"><a href="<?php print $url; ?>"><?php print get_the_title() ?></a></h3>
+                    <div class="category"><?php print $category_link; ?></div>
+                  </div>
+                </div>
+            <?php endif; // $have_special_feature == TRUE ?>
+
           </div>
           <div class="more"><a href="/blog">More News<i class="cc-icon-right-dir"></i></a></div>
         </div>

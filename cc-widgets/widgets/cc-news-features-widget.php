@@ -89,6 +89,7 @@ class CreativeCommons_News_Features_Widget extends WP_Widget {
           <div class="features posts-featured">
             <?php
             // The four other features
+            $posts_displayed = 0;
             $the_query = cc_widgets_get_homepage_features_query('featured', 5);
             while ( $the_query->have_posts() ){
               $the_query->the_post();

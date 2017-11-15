@@ -3,7 +3,7 @@
  * Plugin Name: Creative Commons Donation
  * Plugin URI: http://creativecommons.org
  * Description: A plugin for donations on the Creative Commons site.
- * Version: 1.0.0
+ * Version: 1.0.1
  * Author: Creative Commons
  * Author URI: http://creativecommons.org
  * License: GPL2
@@ -11,7 +11,7 @@
  * --------------------------------------------------------------------
  *
  * Creative Commons Donation - Customizations to the Gravityforms powered donation form.
- * Copyright (C) 2016 Creative Commons
+ * Copyright (C) 2016, 2017 Creative Commons
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,6 +24,8 @@
  * GNU General Public License for more details.
  *
  */
+
+define( 'CC_DONATE_VERSION', '20171010' );
 
 add_filter( 'gform_form_settings', 'cc_donate_edit_form_setting', 10, 2 );
 function cc_donate_edit_form_setting( $settings, $form ) {
@@ -48,9 +50,8 @@ add_action( 'wp_enqueue_scripts', 'cc_donate_register_plugin_styles' );
  * Register style sheet.
  */
 function cc_donate_register_plugin_styles() {
-  wp_register_style( 'cc-donate', plugins_url( 'cc-donate/css/cc-donate.css' ) );
-  wp_enqueue_style( 'cc-donate' );
-  wp_enqueue_script('cc-donate-js', plugin_dir_url( __FILE__ ) . 'js/cc-donate.js', array('cc-common'), '201606013', true);
+  wp_enqueue_style( 'cc-donate', plugins_url( 'cc-donate/css/cc-donate.css' ), array(), CC_DONATE_VERSION );
+  wp_enqueue_script('cc-donate-js', plugin_dir_url( __FILE__ ) . 'js/cc-donate.js', array('cc-common'), CC_DONATE_VERSION, true);
 }
 
 add_filter("gform_pre_render", "populate_previous_page_data");

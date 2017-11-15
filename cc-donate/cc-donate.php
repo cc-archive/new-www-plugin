@@ -25,7 +25,7 @@
  *
  */
 
-define( 'CC_DONATE_VERSION', '20171010' );
+define( 'CC_DONATE_VERSION', '20171011' );
 
 add_filter( 'gform_form_settings', 'cc_donate_edit_form_setting', 10, 2 );
 function cc_donate_edit_form_setting( $settings, $form ) {

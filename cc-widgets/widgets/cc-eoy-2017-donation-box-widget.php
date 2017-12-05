@@ -41,7 +41,7 @@ class CreativeCommons_EOY_2017_Donation_Box_Widget extends WP_Widget {
       <div class="mobile-donate-box">
         <form method='get' id='eoy-mobile-donate-box' action='/donate'>
           <div class="amount-input-wrapper">
-            <span><input class="amount-input" name="amount_other" type="text" value="Amount" aria-label="Amount" onfocus="if(jQuery(this).val() == &quot;Amount&quot;) { jQuery(this).val(&quot;&quot;); }" onblur="if(jQuery(this).val().replace(&quot; &quot;, &quot;&quot;) == &quot;&quot;) { jQuery(this).val(&quot;Amount&quot;); }" tabindex="0"></span>
+            <span><input id="eoy-2017-donate-amount" class="amount-input" name="amount_other" type="text" value="Amount" aria-label="Amount" onfocus="if(jQuery(this).val() == &quot;Amount&quot;) { jQuery(this).val(&quot;&quot;); }" onblur="if(jQuery(this).val().replace(&quot; &quot;, &quot;&quot;) == &quot;&quot;) { jQuery(this).val(&quot;Amount&quot;); }" tabindex="0"></span>
           </div>
           <div>
             <input type="submit" class="donate-button" value="Donate Now">

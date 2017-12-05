@@ -37,6 +37,18 @@ class CreativeCommons_EOY_2017_Donation_Box_Widget extends WP_Widget {
                   <div class="accelerate"><img src="/wp-content/themes/cc/images/yearend-takeover/accelerate.svg" alt="accelerate"></div><span class="motto">free and open<br />access to knowledge.</span></div>
           </div>
       </div>
+
+      <div class="mobile-donate-box">
+        <form method='get' id='eoy-mobile-donate-box' action='/donate'>
+          <div class="amount-input-wrapper">
+            <span><input class="amount-input" name="amount_other" type="text" value="Amount" aria-label="Amount" onfocus="if(jQuery(this).val() == &quot;Amount&quot;) { jQuery(this).val(&quot;&quot;); }" onblur="if(jQuery(this).val().replace(&quot; &quot;, &quot;&quot;) == &quot;&quot;) { jQuery(this).val(&quot;Amount&quot;); }" tabindex="0"></span>
+          </div>
+          <div>
+            <input type="submit" class="donate-button" value="Donate Now">
+          </div>
+        </form>
+      </div>
+
       <div class="donate-box" id="gform_widget-3">
           <div class='gform_wrapper' id='gform_wrapper_12'>
               <form method='get' id='gform_12' action='/donate'>
@@ -59,7 +71,7 @@ class CreativeCommons_EOY_2017_Donation_Box_Widget extends WP_Widget {
                                       </li>
                                       <li class="gchoice_12_1_4">
                                           <input name="input_1" type="radio" value="gf_other_choice" id="choice_12_1_4" tabindex="0" onfocus="jQuery(this).next('input').focus();">
-                                          <input id="input_12_1_other" name="input_1_other" type="text" value="Amount" aria-label="Amount" onfocus="jQuery(this).prev(&quot;input&quot;)[0].click(); if(jQuery(this).val() == &quot;Amount&quot;) { jQuery(this).val(&quot;&quot;); }" onblur="if(jQuery(this).val().replace(&quot; &quot;, &quot;&quot;) == &quot;&quot;) { jQuery(this).val(&quot;Amount&quot;); }" tabindex="0">
+                                          <input id="input_12_1_other" name="input_1_other" type="text" value="Other amount" aria-label="Other amount" onfocus="jQuery(this).prev(&quot;input&quot;)[0].click(); if(jQuery(this).val() == &quot;Other amount&quot;) { jQuery(this).val(&quot;&quot;); }" onblur="if(jQuery(this).val().replace(&quot; &quot;, &quot;&quot;) == &quot;&quot;) { jQuery(this).val(&quot;Other amount&quot;); }" tabindex="0">
                                       </li>
                                   </ul>
                               </div>

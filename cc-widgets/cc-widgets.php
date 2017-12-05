@@ -28,6 +28,7 @@
 include_once ('widgets/cc-homepage-whatshappening-widget.php');
 include_once ('widgets/cc-news-features-widget.php');
 include_once ('widgets/cc-related-news-widget.php');
+include_once ('widgets/cc-eoy-2017-donation-box-widget.php');
 
 function cc_widgets_image_sizes() {
   add_image_size( 'cc_feature_thumbnail', 270, 155, false );

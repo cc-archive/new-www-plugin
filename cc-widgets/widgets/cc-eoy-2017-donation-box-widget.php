@@ -62,16 +62,16 @@ class CreativeCommons_EOY_2017_Donation_Box_Widget extends WP_Widget {
                               <div class="ginput_container ginput_container_radio">
                                   <ul class="gfield_radio" id="input_12_1">
                                       <li class="gchoice_12_1_0">
-                                          <input name="input_1" type="radio" value="$75" id="choice_12_1_0" tabindex="0">
-                                          <label for="choice_12_1_0" id="label_12_1_0">$75 One time</label>
+                                          <input name="input_1" type="radio" value="$75" id="choice_0" tabindex="0">
+                                          <label for="choice_0" id="label_12_1_0">$75 One time</label>
                                       </li>
                                       <li class="gchoice_12_1_1">
-                                          <input name="input_1" type="radio" value="$5" checked="checked" id="choice_12_1_1" tabindex="0">
-                                          <label for="choice_12_1_1" id="label_12_1_1">$5 Monthly</label>
+                                          <input name="input_1" type="radio" value="$5" checked="checked" id="choice_1" tabindex="0">
+                                          <label for="choice_1" id="label_12_1_1">$5 Monthly</label>
                                       </li>
                                       <li class="gchoice_12_1_4">
-                                          <input name="input_1" type="radio" value="gf_other_choice" id="choice_12_1_4" tabindex="0" onfocus="jQuery(this).next('input').focus();">
-                                          <input id="input_12_1_other" name="input_1_other" type="text" value="Other amount" aria-label="Other amount" onfocus="jQuery(this).prev(&quot;input&quot;)[0].click(); if(jQuery(this).val() == &quot;Other amount&quot;) { jQuery(this).val(&quot;&quot;); }" onblur="if(jQuery(this).val().replace(&quot; &quot;, &quot;&quot;) == &quot;&quot;) { jQuery(this).val(&quot;Other amount&quot;); }" tabindex="0">
+                                          <input name="input_1" type="radio" value="gf_other_choice" id="choice_4" tabindex="0" onfocus="jQuery(this).next('input').focus();">
+                                          <input id="input_other" name="input_1_other" type="text" value="Other amount" aria-label="Other amount" onfocus="jQuery(this).prev(&quot;input&quot;)[0].click(); if(jQuery(this).val() == &quot;Other amount&quot;) { jQuery(this).val(&quot;&quot;); }" onblur="if(jQuery(this).val().replace(&quot; &quot;, &quot;&quot;) == &quot;&quot;) { jQuery(this).val(&quot;Other amount&quot;); }" tabindex="0">
                                       </li>
                                   </ul>
                               </div>

@@ -25,7 +25,7 @@ class CreativeCommons_EOY_2017_Donation_Box_Widget extends WP_Widget {
 
     ?>
 <div class="cc-eoy-2017-donation-box-widget">
-  <script src="/wp-content/themes/cc/js/yearend2017.js"></script>
+  <script src="/wp-content/themes/cc/js/yearend2017.js?version=20171211"></script>
   <div class="content-container">
       <div class="yellow-ribbon">
           <span class="support">Support the Movement</span><span class="message"><img src="/wp-content/themes/cc/images/yearend-takeover/accelerate.svg" width="124" alt="accelerate"> free and open access to knowledge!</span>

@@ -60,8 +60,8 @@ function cc_team_listing_shortcode( $atts ) {
         ksort($users);
 
         foreach ($users as $user){
-
-          $output .= '<li class="team-member">';
+          $user_slug = sanitize_title_with_dashes( $user->first_name . $user->last_name );
+          $output .= '<li class="team-member" id="'.$user_slug.'">';
           $output .= '  <a class="user-profile" href="' . get_author_posts_url($user->ID) . '">';
           $output .= '  <div class="image">';
           $output .=      get_avatar($user->ID, '300');

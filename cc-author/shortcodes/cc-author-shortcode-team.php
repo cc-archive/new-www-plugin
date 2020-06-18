@@ -136,7 +136,7 @@ function cc_blockquote_shortcode( $atts ) {
 function cc_choose_license_shortcode() {
 	$output = '<div class="choose-license">';
 	$output .= '<h2><a href="https://creativecommons.org/choose/"> Choose a license</a></h2><p>This chooser helps you determine which Creative Commons License is right for you in a few easy steps. If you are new to Creative Commons, you may also want to read <a href="/share-your-work/licensing-considerations/">Licensing Considerations</a> before you <a href="https://creativecommons.org/choose/" >get started.</a></p>';
-  $output .= '<div class="image"><img src='.get_stylesheet_directory_uri ().'/images/choose_license.png /></div>';
+  $output .= '<div class="image"><img src='.get_stylesheet_directory_uri ().'/assets/images/content/choose_license.png" /></div>';
   $output .=	'<a href="https://creativecommons.org/choose/" class="button choose-license-btn tertiary arrow">Get Started</a></div>';
 	return $output;
 
